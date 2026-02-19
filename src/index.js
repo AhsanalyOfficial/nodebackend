@@ -8,4 +8,4 @@ app.get("", (res, req) => {
   req.send("node.js backend is running");
 });
 
-app.listen(PORT, () => console.log(`Server run on this ${PORT}`));
+app.listen(PORT, "0.0.0.0", () => console.log(`Server run on this ${PORT}`));
