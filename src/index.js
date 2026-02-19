@@ -1,6 +1,7 @@
 const express = require("express");
+const dotenv = require("dotenv");
 const app = express();
-require("dotenv").config();
+dotenv.config();
 
 const PORT = 3000;
 app.get("", (res, req) => {
