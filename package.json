@@ -1,0 +1,27 @@
+{
+  "name": "nodebackend",
+  "version": "1.0.0",
+  "description": "my project of aws",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AhsanalyOfficial/nodebackend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/AhsanalyOfficial/nodebackend/issues"
+  },
+  "homepage": "https://github.com/AhsanalyOfficial/nodebackend#readme",
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "nodemon": "^3.1.11"
+  }
+}
