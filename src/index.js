@@ -10,5 +10,8 @@ app.get("", (req, res) => {
 app.get("/login", (req, res) => {
   res.send("asad bht harami hy.");
 });
+app.get("/logout", (req, res) => {
+  res.send("user logout successfully");
+});
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
