@@ -9,18 +9,18 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-  steps:
-    - name: Checkout Code
-      uses: actions/checkout@v4
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Deploy via SSH
-      uses: appleboy/ssh-actions@v1.0.3
-      with:
-        host: ${{secrets.SSH_HOST}}
-        user: ubuntu
-        key: ${{secrets.SSH_KEY}}
-        scripts: |
-          cd /home/ubuntu/nodebackend
-          git pull
-          npm install
-          node src/index.js
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          user: ubuntu
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /home/ubuntu/nodebackend
+            git pull origin main
+            npm install
+            node src/index.js
