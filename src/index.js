@@ -8,4 +8,8 @@ app.get("", (req, res) => {
   res.send("node.js backend is running");
 });
 
+app.get("/login", (req, res) => {
+  res.send("user login successful");
+});
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
