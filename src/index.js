@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 8080;
 app.get("", (req, res) => {
   res.send("shahid axha bacha ni hy.");
 });
-app.get("login", (req, res) => {
+app.get("/login", (req, res) => {
   res.send("asad bht harami hy.");
 });
 
