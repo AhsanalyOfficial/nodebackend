@@ -12,4 +12,8 @@ app.get("/login", (req, res) => {
   res.send("user login successful");
 });
 
+app.get("/logout", (req, res) => {
+  res.send("deployment is working");
+});
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
