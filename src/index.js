@@ -9,7 +9,7 @@ app.get("", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  res.send("user login successful");
+  res.send("user login successfully");
 });
 
 app.get("/logout", (req, res) => {
