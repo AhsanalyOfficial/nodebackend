@@ -13,7 +13,7 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/logout", (req, res) => {
-  res.send("deployment is working");
+  res.send("deployment is working:::");
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
