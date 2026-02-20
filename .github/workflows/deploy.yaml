@@ -22,7 +22,8 @@ jobs:
           script: |
             cd /home/ubuntu/nodebackend
             git pull origin main
-            npm install
-            pm2 restart all 
-            echo "Deployment successful!"
+            npm install --production
+            pm2 stop all
+            pm2 start all
             pm2 save
+            echo "Deployment successful!"
