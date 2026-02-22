@@ -1,4 +1,4 @@
-name: Deploy node backend to AWS
+name: Deploy Node.js Backend to AWS
 
 on:
   push:
@@ -6,26 +6,46 @@ on:
       - main
 
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Deploy via SSH
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ubuntu
           key: ${{ secrets.SSH_KEY }}
           script: |
+            set -e
+            nvm use 20
             cd /home/ubuntu/nodebackend
             git pull origin main
             rm -rf node_modules
-            npm ci --production
-            pm2 restart ecosystem.config.js --update-env || pm2 start npm --name "app" -- start
+            npm ci 
+            
+            pm2 delete app || true
+            pm2 start ecosystem.config.js --env production || pm2 start npm --name "app" -- start
             pm2 save
             pm2 status
-      
-            echo "✅ Deployment successful!"
+            
+            echo "✅ Deployment successful! 🎉"
