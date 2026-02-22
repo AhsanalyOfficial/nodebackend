@@ -1,6 +1,6 @@
 import prisma from "../prisma/prisma.js";
 import JWTConfig from "../config/jwt.config.js";
-import AppError from "../utils/appError.js";
+import appError from "../utils/appError.js";
 import catchAsync from "../utils/catchAsync.js";
 
 export const protect = catchAsync(async (req, res, next) => {
@@ -15,7 +15,7 @@ export const protect = catchAsync(async (req, res, next) => {
 
   if (!token) {
     return next(
-      new AppError(
+      new appError(
         "You are not logged in. Please log in to access this resource",
         401
       )
@@ -24,7 +24,7 @@ export const protect = catchAsync(async (req, res, next) => {
 
   const decoded = JWTConfig.verifyToken(token);
   if (!decoded) {
-    return next(new AppError("Invalid token or token expired", 401));
+    return next(new appError("Invalid token or token expired", 401));
   }
 
   const user = await prisma.user.findUnique({
@@ -42,13 +42,13 @@ export const protect = catchAsync(async (req, res, next) => {
 
   if (!user) {
     return next(
-      new AppError("User belonging to this token no longer exists", 401)
+      new appError("User belonging to this token no longer exists", 401)
     );
   }
 
   if (!user.isActive) {
     return next(
-      new AppError(
+      new appError(
         "Your account has been deactivated. Please contact support",
         403
       )

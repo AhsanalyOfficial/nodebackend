@@ -1,6 +1,6 @@
 import prisma from "../prisma/prisma.js";
 import bcrypt from "bcryptjs";
-import AppError from "../utils/appError.js";
+import appError from "../utils/appError.js";
 import JWTConfig from "../config/jwt.config.js";
 import dotenv from "dotenv";
 
@@ -32,7 +32,7 @@ class UserService {
       where: { email: email },
     });
     if (existingUser) {
-      throw new AppError("Email already in use", 400);
+      throw new appError("Email already in use", 400);
     }
 
     const hashedPassword = await this.hashPassword(password);
@@ -77,12 +77,12 @@ class UserService {
     });
 
     if (!user) {
-      throw new AppError("Invalid email or password", 401);
+      throw new appError("Invalid email or password", 401);
     }
 
     // Check if user is active
     if (!user.isActive) {
-      throw new AppError(
+      throw new appError(
         "Your account has been deactivated. Please contact support",
         403
       );
@@ -91,7 +91,7 @@ class UserService {
     // Verify password
     const isPasswordValid = await this.comparePassword(password, user.password);
     if (!isPasswordValid) {
-      throw new AppError("Invalid email or password", 401);
+      throw new appError("Invalid email or password", 401);
     }
 
     // Remove password from response
@@ -221,7 +221,7 @@ class UserService {
     });
 
     if (!user) {
-      throw new AppError("User not found", 404);
+      throw new appError("User not found", 404);
     }
 
     // Calculate average rating
@@ -243,12 +243,12 @@ class UserService {
     });
 
     if (!existingUser) {
-      throw new AppError("User not found", 404);
+      throw new appError("User not found", 404);
     }
 
     // Only allow users to update their own profile unless admin
     if (requestingUser.role !== "ADMIN" && requestingUser.id !== id) {
-      throw new AppError("You can only update your own profile", 403);
+      throw new appError("You can only update your own profile", 403);
     }
 
     // Remove sensitive fields from update data
@@ -288,12 +288,12 @@ class UserService {
     });
 
     if (!existingUser) {
-      throw new AppError("User not found", 404);
+      throw new appError("User not found", 404);
     }
 
     // Only allow users to delete their own account unless admin
     if (requestingUser.role !== "ADMIN" && requestingUser.id !== id) {
-      throw new AppError("You can only delete your own account", 403);
+      throw new appError("You can only delete your own account", 403);
     }
 
     // Soft delete by deactivating
@@ -313,7 +313,7 @@ class UserService {
     });
 
     if (!user) {
-      throw new AppError("User not found", 404);
+      throw new appError("User not found", 404);
     }
 
     // Verify current password
@@ -322,7 +322,7 @@ class UserService {
       user.password
     );
     if (!isPasswordValid) {
-      throw new AppError("Current password is incorrect", 401);
+      throw new appError("Current password is incorrect", 401);
     }
 
     // Hash new password

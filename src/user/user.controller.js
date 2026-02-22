@@ -1,7 +1,7 @@
 import UserService from './user.service.js';
 import ResponseHandler from '../utils/responseHandler.js';
 import catchAsync from '../utils/catchAsync.js';
-import AppError from '../utils/appError.js';
+import appError from '../utils/appError.js';
 
 class UserController {
   static register = catchAsync(async (req, res, next) => {
@@ -15,7 +15,7 @@ class UserController {
     const { email, password } = req.body;
     
     if (!email || !password) {
-      return next(new AppError('Please provide email and password', 400));
+      return next(new appError('Please provide email and password', 400));
     }
     
     const { user, token } = await UserService.login(email, password);
@@ -80,7 +80,7 @@ class UserController {
     const { currentPassword, newPassword } = req.body;
     
     if (!currentPassword || !newPassword) {
-      return next(new AppError('Please provide current and new password', 400));
+      return next(new appError('Please provide current and new password', 400));
     }
     
     const result = await UserService.changePassword(req.user.id, currentPassword, newPassword);
@@ -91,7 +91,7 @@ class UserController {
   // Update provider profile
   static updateProviderProfile = catchAsync(async (req, res, next) => {
     if (req.user.role !== 'PROVIDER') {
-      return next(new AppError('Only providers can access this route', 403));
+      return next(new appError('Only providers can access this route', 403));
     }
     
     const updatedProfile = await UserService.updateProviderProfile(req.user.id, req.body);
@@ -105,7 +105,7 @@ class UserController {
     const { isActive } = req.body;
     
     if (req.user.role !== 'ADMIN') {
-      return next(new AppError('Admin access required', 403));
+      return next(new appError('Admin access required', 403));
     }
     
     const user = await UserService.updateUser(id, { isActive }, req.user);
