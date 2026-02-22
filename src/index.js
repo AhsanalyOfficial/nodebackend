@@ -11,7 +11,6 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// Middleware
 app.use(helmet()); // Security headers
 app.use(cors()); // Enable CORS
 app.use(morgan('dev')); // Logging
