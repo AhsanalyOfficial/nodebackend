@@ -41,8 +41,8 @@ jobs:
             cd /home/ubuntu/nodebackend
             git pull origin main
             rm -rf node_modules
-            npm ci 
-            
+            npm Install
+
             pm2 delete app || true
             pm2 start ecosystem.config.js --env production || pm2 start npm --name "app" -- start
             pm2 save
