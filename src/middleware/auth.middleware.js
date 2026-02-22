@@ -1,6 +1,6 @@
 import prisma from "../prisma/prisma.js";
 import JWTConfig from "../config/jwt.config.js";
-import AppError from "../utils/AppError.js";
+import AppError from "../utils/appError.js";
 import catchAsync from "../utils/catchAsync.js";
 
 export const protect = catchAsync(async (req, res, next) => {

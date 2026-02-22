@@ -1,6 +1,6 @@
 import prisma from "../prisma/prisma.js";
 import bcrypt from "bcryptjs";
-import AppError from "../utils/AppError.js";
+import AppError from "../utils/appError.js";
 import JWTConfig from "../config/jwt.config.js";
 import dotenv from "dotenv";
 

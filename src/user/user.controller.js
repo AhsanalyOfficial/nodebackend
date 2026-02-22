@@ -1,7 +1,7 @@
 import UserService from './user.service.js';
 import ResponseHandler from '../utils/responseHandler.js';
 import catchAsync from '../utils/catchAsync.js';
-import AppError from '../utils/AppError.js';
+import AppError from '../utils/appError.js';
 
 class UserController {
   static register = catchAsync(async (req, res, next) => {
