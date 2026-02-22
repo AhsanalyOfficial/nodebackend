@@ -1,0 +1,269 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  CUSTOMER
+  PROVIDER
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING            // Customer booked, waiting for provider
+  CONFIRMED          // Provider accepted
+  REJECTED           // Provider rejected
+  COMPLETED          // Job done
+  CANCELLED          // Customer cancelled
+  IN_PROGRESS        // Provider started work
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
+  FAILED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  ONLINE
+}
+
+enum ServiceCategories {
+  PLUMBING
+  ELECTRICAL
+  CLEANING
+  PAINTING
+  CARPENTRY
+  APPLIANCE_REPAIR
+  PEST_CONTROL
+  MOVING
+  OTHER
+}
+
+enum NotificationType {
+  BOOKING
+  PAYMENT
+  REMINDER
+  ALERT
+}
+
+model User {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  password   String
+  firstName  String
+  lastName   String
+  phone      String?
+  avatar     String?
+  role       UserRole @default(CUSTOMER)
+  isVerified Boolean  @default(false)
+  isActive   Boolean  @default(true)
+
+  address   String?
+  city      String?
+  state     String?
+  pincode   String?
+  latitude  Float?
+  longitude Float?
+
+  customerBookings Booking[]      @relation("CustomerBookings")
+  providerBookings Booking[]      @relation("ProviderBookings")
+  services         Service[]
+  reviewsGiven     Review[]       @relation("Reviewer")
+  reviewsReceived  Review[]       @relation("Provider")
+  notifications    Notification[]
+
+  availabilities Availability[]       // Relation to provider's availability
+
+  bio         String?
+  experience  Int?                    // Years of experience
+  verifiedDoc String?                 // Document URL for verification
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([role])
+  @@index([city, pincode])
+}
+
+model ServiceCategory {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  description String?
+  isActive    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  services Service[]
+}
+
+model Service {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  price       Float
+  duration    Int?                   // Duration in minutes
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  providerId  String
+  provider    User   @relation(fields: [providerId], references: [id])
+
+  categoryId  String
+  category    ServiceCategory @relation(fields: [categoryId], references: [id])
+
+  bookings    Booking[]
+  reviews     Review[]
+
+  @@unique([providerId, title])      // One provider can't have duplicate service titles
+  @@index([providerId])
+  @@index([categoryId])
+}
+
+model Booking {
+  id            String @id @default(uuid())
+  bookingNumber String @unique          // Human readable like "BOK-2024-0001"
+
+  customerId String
+  customer   User   @relation("CustomerBookings", fields: [customerId], references: [id])
+
+  providerId String
+  provider   User   @relation("ProviderBookings", fields: [providerId], references: [id])
+
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id])
+
+  scheduledDate DateTime                // Date of service
+  scheduledTime String                  // Time slot like "10:00-11:00"
+  duration      Int                     // Duration in minutes
+
+  status        BookingStatus @default(PENDING)
+  paymentStatus PaymentStatus @default(PENDING)
+
+  price       Float                     // Final price after all calculations
+  discount    Float @default(0)
+  tax         Float @default(0)
+  totalAmount Float
+
+  serviceAddress String
+  serviceLat     Float?
+  serviceLng     Float?
+
+  description   String?                 // Customer notes
+  providerNotes String?                 // Provider notes after service
+
+  bookedAt     DateTime  @default(now())
+  confirmedAt  DateTime?
+  startedAt    DateTime?
+  completedAt  DateTime?
+  cancelledAt  DateTime?
+  cancelledBy  UserRole?
+  cancelReason String?
+
+  payment       Payment?
+  review        Review?
+  notifications Notification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([providerId, scheduledDate, scheduledTime])
+  @@index([customerId])
+  @@index([providerId])
+  @@index([status])
+  @@index([scheduledDate])
+}
+
+model Payment {
+  id        String  @id @default(uuid())
+  bookingId String  @unique
+  booking   Booking @relation(fields: [bookingId], references: [id])
+
+  amount Float
+  tax    Float
+  total  Float
+
+  paymentMethod   PaymentMethod       // "CASH", "CARD", "ONLINE"
+  transactionId   String? @unique     // Gateway transaction ID
+  gatewayResponse Json?               // Store raw gateway response
+
+  status PaymentStatus @default(PENDING)
+  paidAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([bookingId])
+}
+
+model Review {
+  id      String  @id @default(uuid())
+  rating  Int     @default(5) 
+  comment String?
+
+  bookingId String  @unique
+  booking   Booking @relation(fields: [bookingId], references: [id])
+
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id])
+
+  reviewerId String
+  reviewer   User   @relation("Reviewer", fields: [reviewerId], references: [id])
+
+  providerId String
+  provider   User   @relation("Provider", fields: [providerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([bookingId, reviewerId])
+  @@index([providerId])
+  @@index([serviceId])
+}
+
+model Notification {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  title   String
+  message String
+  type    NotificationType
+  isRead  Boolean @default(false)
+
+  bookingId String?
+  booking   Booking? @relation(fields: [bookingId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, isRead])
+  @@index([createdAt])
+}
+
+model Availability {
+  id         String @id @default(uuid())
+  providerId String
+  provider   User   @relation(fields: [providerId], references: [id])
+
+  dayOfWeek   Int             // 0 = Sunday, 1 = Monday, etc.
+  startTime   String          // "09:00"
+  endTime     String          // "17:00"
+  isAvailable Boolean @default(true)
+
+  specificDate DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([providerId, dayOfWeek, specificDate])
+  @@index([providerId])
+}
