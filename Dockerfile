@@ -1,23 +1,26 @@
-# Node.js official image
+# Use official Node.js image
 FROM node:20-alpine
 
-# Working directory
+# Set working directory
 WORKDIR /app
 
-# Package files copy karo
+# Copy package files
 COPY package*.json ./
 
-# Dependencies install karo
-RUN npm ci --only=production
+# Copy Prisma schema (THIS IS CRITICAL!)
+COPY prisma ./prisma/
 
-# Source code copy karo
+# Install dependencies
+RUN npm ci
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Copy application code
 COPY . .
 
-# Environment variable for port
-ENV PORT=8080
-
-# Port expose karo
+# Expose port
 EXPOSE 8080
 
-# App start karo
+# Start application
 CMD ["node", "src/index.js"]
