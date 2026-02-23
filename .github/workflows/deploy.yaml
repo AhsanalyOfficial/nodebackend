@@ -15,9 +15,9 @@ jobs:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.DOCKER_SSH_KEY }}
+          host: ${{ secrets.DOCKER_SSH_HOST }}
           username: ubuntu
-          key: ${{ secrets.SSH_KEY }}
+          key: ${{ secrets.DOCKER_SSH_KEY }}
           script: |
             # Navigate to project directory
             cd /home/ubuntu/nodebackend
