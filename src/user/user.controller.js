@@ -13,7 +13,7 @@ class UserController {
   // Login user
   static login = catchAsync(async (req, res, next) => {
     const { email, password } = req.body;
-    
+    console.log("email, password", email, password)
     if (!email || !password) {
       return next(new appError('Please provide email and password', 400));
     }

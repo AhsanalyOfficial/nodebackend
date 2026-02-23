@@ -5,7 +5,7 @@ import catchAsync from "../utils/catchAsync.js";
 
 export const protect = catchAsync(async (req, res, next) => {
   let token;
-
+  console.log("token:::::", token);
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")

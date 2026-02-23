@@ -3,21 +3,11 @@ import bcrypt from "bcryptjs";
 import appError from "../utils/appError.js";
 import JWTConfig from "../config/jwt.config.js";
 import dotenv from "dotenv";
+import { comparePassword, hashPassword } from "../utils/bcrypt.utils.js";
 
 dotenv.config();
 
 class UserService {
-  static async hashPassword(password) {
-    const salt = await bcrypt.genSalt(
-      parseInt(process.env.BCRYPT_ROUNDS) || 10
-    );
-    return await bcrypt.hash(password, salt);
-  }
-
-  static async comparePassword(plainPassword, hashedPassword) {
-    return await bcrypt.compare(plainPassword, hashedPassword);
-  }
-
   static async register(userData) {
     const {
       firstName,
@@ -35,7 +25,7 @@ class UserService {
       throw new appError("Email already in use", 400);
     }
 
-    const hashedPassword = await this.hashPassword(password);
+    const hashedPassword = await hashPassword(password);
 
     const user = await prisma.user.create({
       data: {
@@ -75,7 +65,7 @@ class UserService {
     const user = await prisma.user.findUnique({
       where: { email },
     });
-
+    console.log("user", user)
     if (!user) {
       throw new appError("Invalid email or password", 401);
     }
@@ -89,7 +79,7 @@ class UserService {
     }
 
     // Verify password
-    const isPasswordValid = await this.comparePassword(password, user.password);
+    const isPasswordValid = await comparePassword(password, user.password);
     if (!isPasswordValid) {
       throw new appError("Invalid email or password", 401);
     }
@@ -103,6 +93,7 @@ class UserService {
       email: user.email,
       role: user.role,
     });
+    console.log("token", token)
 
     return { user: userWithoutPassword, token };
   }
@@ -317,7 +308,7 @@ class UserService {
     }
 
     // Verify current password
-    const isPasswordValid = await this.comparePassword(
+    const isPasswordValid = await comparePassword(
       currentPassword,
       user.password
     );
@@ -326,7 +317,7 @@ class UserService {
     }
 
     // Hash new password
-    const hashedPassword = await this.hashPassword(newPassword);
+    const hashedPassword = await hashPassword(newPassword);
 
     // Update password
     await prisma.user.update({

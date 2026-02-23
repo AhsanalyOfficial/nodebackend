@@ -59,18 +59,19 @@ model User {
   password   String
   firstName  String
   lastName   String
-  phone      String?
+  phone      String
   avatar     String?
   role       UserRole @default(CUSTOMER)
   isVerified Boolean  @default(false)
   isActive   Boolean  @default(true)
+  reason     String?
 
-  address   String?
-  city      String?
-  state     String?
-  pincode   String?
-  latitude  Float?
-  longitude Float?
+  address   String
+  city      String
+  state     String
+  zipCode   String
+  latitude  Float
+  longitude Float
 
   customerBookings Booking[]      @relation("CustomerBookings")
   providerBookings Booking[]      @relation("ProviderBookings")
@@ -90,7 +91,7 @@ model User {
 
   @@index([email])
   @@index([role])
-  @@index([city, pincode])
+  @@index([city, zipCode])
 }
 
 model ServiceCategory {
