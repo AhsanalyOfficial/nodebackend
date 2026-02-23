@@ -1,4 +1,30 @@
-name: Deploy node backend to AWS
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Use Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+          echo "✅ Deployment successful!"
+
+
+# name: Deploy node backend to AWS
 
 # on:
 #   push:
